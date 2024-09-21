@@ -1,0 +1,61 @@
+version: '3'
+services:
+  # PostgreSQL Service
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'postgres'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Redis Service
+  redis:
+    image: 'redis:latest'
+    container_name: 'redis'
+    ports:
+      - "6379:6379"
+
+  # Server (Backend) Service
+  server:
+    build:
+      context: ./server  # Server's code directory
+      dockerfile: Dockerfile.dev  # Dockerfile for the server
+    container_name: 'server'
+    volumes:
+      - ./server:/app  # Mount local server directory into the container for live updates
+      - /app/server/node_modules  # Ignore node_modules to avoid overwriting
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=mydatabase
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+    ports:
+      - "5100:5100"  # Expose backend on port 5000
+    depends_on:
+      - postgres
+      - redis
+
+  # Client (Frontend) Service
+  client:
+    build:
+      context: ./client  # Client's code directory
+      dockerfile: Dockerfile.dev  # Dockerfile for the client
+    container_name: 'client'
+    volumes:
+      - ./clien:/app  # Mount local client directory into the container for live updates
+      - /app/clien/node_modules  # Ignore node_modules to avoid overwriting
+    ports:
+      - "3100:3100"  # Expose frontend on port 3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # For hot reloading in Docker
+
+volumes:
+  postgres-data:  # Named volume for PostgreSQL data persistence
