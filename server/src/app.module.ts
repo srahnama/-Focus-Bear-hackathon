@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import * as dotenv from 'dotenv';
 
+ 
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+
 dotenv.config();
 
 @Module({
@@ -18,6 +21,7 @@ dotenv.config();
       synchronize: true,                       // Automatically sync the database schema (disable in production)
     }),
     UsersModule,
+    FriendRequestsModule,
     // UsersModule, // Example module (users feature module)
   ],
 })

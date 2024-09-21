@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './user.entity';  // Assuming there's a User entity
+import { User } from '../users/user.entity';  // Assuming there's a User entity
 
 @Entity()
 export class FriendRequest {
