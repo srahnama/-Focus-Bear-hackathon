@@ -53,4 +53,22 @@ export class FriendRequestsService {
 
     await this.friendRequestRepository.remove(friendRequest);
   }
+
+  // Method to get all friend requests received by a user
+  async getReceivedFriendRequests(userId: number): Promise<FriendRequest[]> {
+    const receiver = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!receiver) {
+      throw new Error('User not found');
+    }
+
+    // Find all friend requests where the user is the receiver
+    return this.friendRequestRepository.find({
+      where: { receiver: receiver },
+      relations: ['sender'],  // Include the sender's details in the result
+    });
+  }
+
 }

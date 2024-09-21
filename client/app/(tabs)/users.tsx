@@ -10,7 +10,7 @@ const Users = () => {
   // Function to fetch users from API
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users'); // Replace with your API URL
+      const response = await fetch('http://192.168.1.2:3000/users'); // Replace with your API URL
       const data = await response.json();
       setUsers(data); // Assuming the response is a list of users
       console.log('Users:', data);

@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Delete, Body } from '@nestjs/common';
+import { Controller, Post, Param, Delete, Body, Get } from '@nestjs/common';
 import { FriendRequestsService } from './friend-requests.service';
 
 @Controller('friend-requests')
@@ -25,4 +25,9 @@ export class FriendRequestsController {
   async rejectFriendRequest(@Param('id') id: number) {
     return this.friendRequestsService.rejectFriendRequest(id);
   }
+
+  @Get('received/:userId')
+  async getReceivedFriendRequests(@Param('userId') userId: number) {
+    return this.friendRequestsService.getReceivedFriendRequests(userId);
+}
 }
