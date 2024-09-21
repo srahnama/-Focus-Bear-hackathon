@@ -1,44 +1,81 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// Example functional component
+const Users = () => {
+  // State to store users data and loading state
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default function Users() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Profile!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-       
-    </ParallaxScrollView>
+  // Function to fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/users'); // Replace with your API URL
+      const data = await response.json();
+      setUsers(data); // Assuming the response is a list of users
+      console.log('Users:', data);
+      setLoading(false); // Disable loading state once data is fetched
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setLoading(false); // Stop loading if there is an error
+    }
+  };
+
+  // Use useEffect to call fetchUsers when the component mounts
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Render a single user item in the FlatList
+  const renderItem = ({ item }) => (
+    <View style={styles.item}>
+      <Text style={styles.name}>{item.username}</Text> 
+      <Text>{item.email}</Text>  
+    </View>
   );
-}
+
+  // Show a loading indicator while fetching data
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={users} // Users data from state
+        renderItem={renderItem} // Function to render each user
+        keyExtractor={(item) => item.id.toString()} // Unique key for each item
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    paddingTop: 50,
+    paddingHorizontal: 20,
+  },
+  item: {
+    padding: 15,
+    marginVertical: 8,
+    backgroundColor: '#f9c2ff',
+    borderRadius: 8,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
 });
+
+export default Users;
